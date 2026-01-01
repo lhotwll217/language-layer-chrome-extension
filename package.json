@@ -1,13 +1,13 @@
 {
-  "name": "chrome-extension-boilerplate-react-vite",
-  "version": "0.5.0",
-  "description": "chrome extension boilerplate",
+  "name": "language-layer-chrome-extension",
+  "version": "0.1.0",
+  "description": "Chrome extension for language learning with word replacement and translation tooltips",
   "license": "MIT",
   "private": true,
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite.git"
+    "url": "https://github.com/lhotwll217/language-layer-chrome-extension.git"
   },
   "type": "module",
   "scripts": {
