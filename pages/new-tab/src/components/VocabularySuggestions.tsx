@@ -6,18 +6,18 @@ import type { VocabularySuggestion } from '../api/translate';
 interface VocabularySuggestionsProps {
   suggestions: VocabularySuggestion[];
   onApprove: (suggestion: VocabularySuggestion) => void;
-  onReject: (from: string) => void;
-  isInVocabulary: (from: string) => boolean;
+  onReject: (nativeWord: string) => void;
+  isInVocabulary: (nativeWord: string) => boolean;
   isLoading?: boolean;
 }
 
-export function VocabularySuggestions({
+export const VocabularySuggestions = ({
   suggestions,
   onApprove,
   onReject,
   isInVocabulary,
   isLoading,
-}: VocabularySuggestionsProps) {
+}: VocabularySuggestionsProps) => {
   if (isLoading) {
     return (
       <Card>
@@ -54,14 +54,14 @@ export function VocabularySuggestions({
       <CardContent className="space-y-2">
         {suggestions.map(suggestion => (
           <VocabularySuggestionCard
-            key={suggestion.from}
+            key={suggestion.nativeWord}
             suggestion={suggestion}
             onApprove={() => onApprove(suggestion)}
-            onReject={() => onReject(suggestion.from)}
-            isAdded={isInVocabulary(suggestion.from)}
+            onReject={() => onReject(suggestion.nativeWord)}
+            isAdded={isInVocabulary(suggestion.nativeWord)}
           />
         ))}
       </CardContent>
     </Card>
   );
-}
+};

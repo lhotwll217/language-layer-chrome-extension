@@ -2,15 +2,16 @@ import { useStorage } from '@extension/shared';
 import { vocabularyStorage, type VocabularyItem } from '@extension/storage';
 import { useMemo, useCallback } from 'react';
 
-export function useVocabularyStorage() {
+export const useVocabularyStorage = () => {
   const rawVocabulary = useStorage(vocabularyStorage);
 
-  // Ensure vocabulary is always an array (handle null/undefined from storage)
+  // Ensure vocabulary is always an array and filter out legacy items
   const vocabulary = useMemo(() => {
     if (!rawVocabulary || !Array.isArray(rawVocabulary)) {
       return [];
     }
-    return rawVocabulary;
+    // Filter out legacy items with old field names
+    return rawVocabulary.filter(item => item.nativeWord && item.learningWord);
   }, [rawVocabulary]);
 
   // Get active (enabled) vocabulary
@@ -24,19 +25,19 @@ export function useVocabularyStorage() {
   }, []);
 
   // Remove a word
-  const removeWord = useCallback(async (from: string) => {
-    await vocabularyStorage.removeWord(from);
+  const removeWord = useCallback(async (nativeWord: string) => {
+    await vocabularyStorage.removeWord(nativeWord);
   }, []);
 
   // Toggle word enabled state
-  const toggleWord = useCallback(async (from: string) => {
-    await vocabularyStorage.toggleWord(from);
+  const toggleWord = useCallback(async (nativeWord: string) => {
+    await vocabularyStorage.toggleWord(nativeWord);
   }, []);
 
   // Check if a word exists in vocabulary
   const hasWord = useCallback(
-    (from: string) => {
-      return vocabulary.some(item => item.from.toLowerCase() === from.toLowerCase());
+    (nativeWord: string) => {
+      return vocabulary.some(item => item.nativeWord.toLowerCase() === nativeWord.toLowerCase());
     },
     [vocabulary]
   );
@@ -51,4 +52,4 @@ export function useVocabularyStorage() {
     count: vocabulary.length,
     activeCount: activeVocabulary.length,
   };
-}
+};

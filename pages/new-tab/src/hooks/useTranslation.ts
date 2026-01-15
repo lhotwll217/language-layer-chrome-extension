@@ -11,7 +11,7 @@ interface UseTranslationState {
   suggestions: VocabularySuggestion[];
 }
 
-export function useTranslation() {
+export const useTranslation = () => {
   const settings = useStorage(settingsStorage);
 
   const [state, setState] = useState<UseTranslationState>({
@@ -86,10 +86,10 @@ export function useTranslation() {
     });
   }, []);
 
-  const removeSuggestion = useCallback((from: string) => {
+  const removeSuggestion = useCallback((nativeWord: string) => {
     setState(prev => ({
       ...prev,
-      suggestions: prev.suggestions.filter(s => s.from.toLowerCase() !== from.toLowerCase()),
+      suggestions: prev.suggestions.filter(s => s.nativeWord.toLowerCase() !== nativeWord.toLowerCase()),
     }));
   }, []);
 
@@ -100,4 +100,4 @@ export function useTranslation() {
     removeSuggestion,
     hasApiKey: !!settings?.anthropicApiKey,
   };
-}
+};

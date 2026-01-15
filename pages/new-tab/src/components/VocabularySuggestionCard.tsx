@@ -9,7 +9,7 @@ interface VocabularySuggestionCardProps {
   isAdded?: boolean;
 }
 
-export function VocabularySuggestionCard({ suggestion, onApprove, onReject, isAdded }: VocabularySuggestionCardProps) {
+export const VocabularySuggestionCard = ({ suggestion, onApprove, onReject, isAdded }: VocabularySuggestionCardProps) => {
   return (
     <Card className="p-3">
       <div className="flex items-center justify-between gap-3">
@@ -21,9 +21,9 @@ export function VocabularySuggestionCard({ suggestion, onApprove, onReject, isAd
             </Badge>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-medium truncate">{suggestion.from}</span>
+            <span className="font-medium truncate">{suggestion.nativeWord}</span>
             <span className="text-muted-foreground">→</span>
-            <span className="text-primary truncate">{suggestion.to}</span>
+            <span className="text-primary truncate">{suggestion.learningWord}</span>
           </div>
         </div>
 
@@ -55,4 +55,4 @@ export function VocabularySuggestionCard({ suggestion, onApprove, onReject, isAd
       </div>
     </Card>
   );
-}
+};

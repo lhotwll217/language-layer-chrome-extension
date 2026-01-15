@@ -61,7 +61,7 @@ export default function App() {
 
     console.log(
       `[CEB] Processing ${vocabulary.length} vocabulary items:`,
-      vocabulary.map(v => `"${v.from}" → "${v.to}"`).join(', ')
+      vocabulary.map(v => `"${v.nativeWord}" → "${v.learningWord}"`).join(', ')
     );
 
     // Clear existing chips first
@@ -84,57 +84,75 @@ export default function App() {
     }
 
     // Build regex pattern
-    const words = vocabulary.map(item => item.from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const words = vocabulary.map(item => item.nativeWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     const patternSource = `\\b(${words.join('|')})\\b(?![a-zA-Z])`;
     const testPattern = new RegExp(patternSource, 'i');
     const createMatchPattern = () => new RegExp(patternSource, 'gi');
 
     // Vocab lookup map
     const vocabMap = new Map<string, VocabularyItem>();
-    vocabulary.forEach(item => vocabMap.set(item.from.toLowerCase(), item));
+    vocabulary.forEach(item => vocabMap.set(item.nativeWord.toLowerCase(), item));
 
     const createChip = (originalWord: string, vocabItem: VocabularyItem) => {
       const chip = document.createElement('span');
       chip.className = 'ceb-word-chip';
-      chip.textContent = vocabItem.to;
+      chip.textContent = vocabItem.learningWord;
       chip.setAttribute('data-original', originalWord);
       chip.style.cssText = `
-        display:inline-flex;align-items:center;padding:2px 8px;margin:0 2px;
-        background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-        color:white;border-radius:6px;font-size:0.875em;font-weight:500;
-        box-shadow:0 2px 4px rgba(0,0,0,0.1);cursor:help;
+        display: inline-flex;
+        align-items: center;
+        background: #f3f4f6;
+        color: #1f2937;
+        padding: 1px 8px;
+        margin: 0 2px;
+        border-radius: 6px;
+        font-size: 0.875em;
+        font-weight: 600;
+        cursor: help;
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
       `;
 
       const tooltip = document.createElement('div');
       tooltip.innerHTML = `
-        <div style="font-weight:600;margin-bottom:8px;font-size:11px;color:#a78bfa;">
-          ${vocabItem.fromLang} → ${vocabItem.toLang}
+        <div style="font-weight:700;margin-bottom:8px;font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;">
+          ${vocabItem.nativeLang} → ${vocabItem.learningLang}
         </div>
-        <div style="font-size:14px;display:flex;align-items:center;gap:10px;">
-          <span>"${originalWord}"</span>
-          <span>→</span>
-          <span style="padding:4px 12px;border-radius:6px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;font-weight:600;">"${vocabItem.to}"</span>
+        <div style="font-size:14px;display:flex;align-items:center;gap:12px;font-weight:500;">
+          <span style="opacity:0.6;">"${originalWord}"</span>
+          <span style="opacity:0.3;">→</span>
+          <span style="padding:4px 12px;border-radius:8px;background:#f3f4f6;color:#1f2937;font-weight:700;border:2px solid #e5e7eb;">"${vocabItem.learningWord}"</span>
         </div>
       `;
       tooltip.style.cssText = `
         position:fixed;transform:translateX(-50%) translateY(-100%);
-        background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);
-        color:white;padding:14px 20px;border-radius:8px;font-size:14px;
-        white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.4);
+        background:white;
+        color:#1f2937;padding:16px 20px;border-radius:12px;
+        white-space:nowrap;box-shadow:0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
         opacity:0;pointer-events:none;z-index:2147483647;
-        border:1px solid rgba(167,139,250,0.3);
+        border:2px solid #e5e7eb;
+        transition: opacity 0.2s ease, transform 0.2s ease;
       `;
 
       chip.addEventListener('mouseenter', () => {
+        chip.style.background = '#e5e7eb';
+        chip.style.borderColor = '#d1d5db';
         const rect = chip.getBoundingClientRect();
         tooltip.style.left = `${rect.left + rect.width / 2}px`;
-        tooltip.style.top = `${rect.top - 8}px`;
+        tooltip.style.top = `${rect.top - 12}px`;
         overlay!.appendChild(tooltip);
+        requestAnimationFrame(() => {
         tooltip.style.opacity = '1';
+          tooltip.style.transform = 'translateX(-50%) translateY(-100%) scale(1)';
+        });
       });
       chip.addEventListener('mouseleave', () => {
+        chip.style.background = '#f3f4f6';
+        chip.style.borderColor = '#e5e7eb';
         tooltip.style.opacity = '0';
-        tooltip.remove();
+        tooltip.style.transform = 'translateX(-50%) translateY(-100%) scale(0.95)';
+        setTimeout(() => tooltip.remove(), 200);
       });
 
       return chip;
